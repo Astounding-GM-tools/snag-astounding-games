@@ -1,0 +1,204 @@
+:root {
+  --ink: #111;
+  --paper: #f2efe6;
+  --grey: #8a877f;
+  --dim: #3a3936;
+  --screen: #1b1a18;
+  --title-font: 'Limelight', 'Georgia', serif;
+  --body-font: 'Special Elite', 'Courier New', monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  color: var(--paper);
+  font-family: var(--body-font);
+}
+
+#app {
+  min-height: 100%;
+}
+
+button {
+  font-family: var(--title-font);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px double var(--ink);
+  outline: 2px solid var(--paper);
+  padding: 0.45em 1.2em;
+  cursor: pointer;
+  transition: transform 0.08s;
+}
+
+button:hover:not(:disabled) {
+  transform: scale(1.04) rotate(-0.6deg);
+}
+
+button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--paper);
+  border-color: var(--paper);
+  outline: none;
+}
+
+/* ---- Film effects ---- */
+
+.film {
+  position: relative;
+  min-height: 100svh;
+  background: radial-gradient(ellipse at center, #2a2926 0%, var(--screen) 60%, #000 100%);
+  filter: grayscale(1) contrast(1.08);
+  animation: flicker 0.18s infinite steps(2);
+  overflow: hidden;
+}
+
+.film::before,
+.film::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Grain */
+.film::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  opacity: 0.16;
+  animation: grain 0.5s steps(6) infinite;
+}
+
+/* Vignette + scratches */
+.film::after {
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 31.8%, rgba(255, 255, 255, 0.07) 32%, transparent 32.2%),
+    linear-gradient(90deg, transparent 77.9%, rgba(0, 0, 0, 0.25) 78%, transparent 78.15%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.75) 100%);
+  animation: scratch 2.3s steps(1) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-5%, 3%); }
+  40% { transform: translate(4%, -6%); }
+  60% { transform: translate(-3%, 7%); }
+  80% { transform: translate(6%, 2%); }
+  100% { transform: translate(-2%, -4%); }
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  100% { opacity: 0.965; }
+}
+
+@keyframes scratch {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  33% { background-position: 18vw 0, -9vw 0, 0 0; }
+  66% { background-position: -12vw 0, 25vw 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film,
+  .film::before,
+  .film::after {
+    animation: none;
+  }
+}
+
+/* Intertitle card frame used by overlays and the title screen */
+.intertitle {
+  background: #0c0c0b;
+  border: 3px solid var(--paper);
+  outline: 1px solid var(--paper);
+  outline-offset: 6px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+}
+
+.intertitle h1,
+.intertitle h2 {
+  font-family: var(--title-font);
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.5em;
+}
+
+.intertitle h1 {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+}
+
+.flourish {
+  color: var(--grey);
+  letter-spacing: 0.4em;
+}
+
+/* High contrast: no grain, scratches, vignette or flicker, and brighter secondary text. */
+@media (prefers-contrast: more) {
+  :root {
+    --grey: #d8d5cc;
+    --dim: #9a978f;
+    --paper: #ffffff;
+  }
+  .film {
+    animation: none;
+    filter: none;
+    background: #000;
+  }
+  .film::before,
+  .film::after {
+    display: none;
+  }
+}
+
+/* Reduced motion: stop every animation and transition (boat, shakes, deals, iris). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Phones: smaller cards so a five-card board fits across. */
+@media (max-width: 600px) {
+  .card:not(.huge) {
+    --w: 54px !important;
+  }
+  .card.small {
+    --w: 38px !important;
+  }
+}
+
+/* A coin in flight between a purse and the pot (see DrawTable). */
+.flying-coin {
+  position: fixed;
+  z-index: 40;
+  border-radius: 50%;
+  background: linear-gradient(#fff, #a9a69e);
+  border: 1px solid #111;
+  pointer-events: none;
+}
+/* A pot coin whose flight hasn't landed yet. */
+.landing {
+  visibility: hidden !important;
+}
